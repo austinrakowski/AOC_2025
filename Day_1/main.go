@@ -1,38 +1,37 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 	"strconv"
 )
 
 func main() {
-	
-	rotations := []string{
-		"L68",
-		"L30",
-		"R48",
-		"L5",
-		"R60",
-		"L55",
-		"L1",
-		"L99",
-		"R14",
-		"L82",
+	file, err := os.Open("day_1.txt")
+	if err != nil {
+		fmt.Printf("error opening file: %v\n", err)
+		return
 	}
+	defer file.Close()
 
+	scanner := bufio.NewScanner(file)
 	position := 50
-	zero_count := 0 
+	zero_count := 0
 
-	for _, line := range rotations {
-		
-		direction := line[0] // 'L' or 'R'
+	for scanner.Scan() {
+		line := scanner.Text()
+		if len(line) == 0 {
+			continue
+		}
+
+		direction := line[0]
 		distance, err := strconv.Atoi(line[1:])
 		if err != nil {
 			fmt.Printf("cannot parse distance: %v\n", err)
 			continue
 		}
 
-		// Apply the rotation
 		if direction == 'L' {
 			position = (position - distance) % 100
 			if position < 0 {
@@ -42,12 +41,10 @@ func main() {
 			position = (position + distance) % 100
 		}
 
-		fmt.Printf("After %s: position = %d\n", line, position)
-
 		if position == 0 {
 			zero_count++
 		}
 	}
 
-	fmt.Printf("\nPassword (times dial points at 0): %d\n", zero_count)
+	fmt.Printf("password: %d\n", zero_count)
 }
